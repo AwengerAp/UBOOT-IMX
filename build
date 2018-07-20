@@ -1,0 +1,37 @@
+#!/bin/bash
+
+RED="\033[1;31m"
+iGRN="\033[0;32m"
+WHT="\033[0;37m"
+NC="\033[0m"
+
+MX6_HB="mx6_1gb_mmc_hb_defconfig"
+MX6_SCM="mx6dqscm_1gb_fix_qwks_rev3_defconfig"
+
+export ARCH=arm
+source /opt/hb-imx-fb/2.4.1/environment-setup-cortexa9hf-neon-fsl-linux-gnueabi
+export CROSS_COMPILE=arm-fsl-linux-gnueabi-
+echo -e "${GRN} Target Compiler Setup [ OK ] ${NC}"
+if [ "$1" = "menuconfig" ];then
+  make menuconfig
+elif [ "$1" = "configure" ];then
+  if [ "$2" = "hb" ];then
+    make $MX6_HB
+    echo -e "${GRN} U-Boot configuration for hummingbird [ OK ]${NC}"
+  elif [ "$2" = "scm" ];then
+    make $MX6_SCM
+    echo -e "${GRN} U-Boot configuration for SCM iMx6 [ OK ]${NC}"
+  else
+    echo -e "${RED} U-Boot configuration [ FAIL ]${NC}"
+  fi
+elif [ "$1" = "clean" ];then
+  make clean
+  echo -e "${GRN} Clean [ OK ]${NC}"
+elif [ "$1" = "help" ];then
+  echo -e "${WHT}./build clean              - to clean${NC}"
+  echo -e "${WHT}./build configure <board>  - to configure u-boot${NC}"
+  echo -e "${WHT}./build menuconfig         - to customize u-boot${NC}"
+  echo -e "${WHT}./build make               - to build u-boot${NC}"
+else
+  make -j4
+fi
